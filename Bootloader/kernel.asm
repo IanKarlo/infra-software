@@ -44,7 +44,7 @@ db "X             ",13,
 db "X             ",13,
 db "X             ",13,0
 
-imagem_erro1: 
+imagem_negacao: 
 db "XXXXXXXXXXXXXX",13,
 db "X       X     ",13,
 db "X     XXXXX   ",13,
@@ -65,13 +65,13 @@ db "X             ",13,
 db "X             ",13,
 db "X             ",13,0
 
-imagem_erro2: 
+imagem_ira: 
 db "XXXXXXXXXXXXXX",13,
 db "X       X     ",13,
 db "X     XXXXX   ",13,
-db "X    X     X  ",13,
-db "X    X T T X  ",13,
-db "X    X  .  X  ",13,
+db "X    X \ / X  ",13,
+db "X    X o o X  ",13,
+db "X    X  ^  X  ",13,
 db "X     XXXXX   ",13,
 db "X       X     ",13,
 db "X       X     ",13,
@@ -86,13 +86,34 @@ db "X             ",13,
 db "X             ",13,
 db "X             ",13,0
 
-imagem_erro3: 
+imagem_barganha: 
 db "XXXXXXXXXXXXXX",13,
 db "X       X     ",13,
 db "X     XXXXX   ",13,
-db "X    X \ / X  ",13,
+db "X    X ^ ^ X  ",13,
 db "X    X o o X  ",13,
-db "X    X  ^  X  ",13,
+db "X    X  O  X  ",13,
+db "X     XXXXX   ",13,
+db "X       X     ",13,
+db "X       X     ",13,
+db "X     X X     ",13,
+db "X    X  X     ",13,
+db "X   X   X     ",13,
+db "X  X    X     ",13,
+db "X       X     ",13,
+db "X             ",13,
+db "X             ",13,
+db "X             ",13,
+db "X             ",13,
+db "X             ",13,0
+
+imagem_depressao: 
+db "XXXXXXXXXXXXXX",13,
+db "X       X     ",13,
+db "X     XXXXX   ",13,
+db "X    X     X  ",13,
+db "X    X T T X  ",13,
+db "X    X  .  X  ",13,
 db "X     XXXXX   ",13,
 db "X       X     ",13,
 db "X       X     ",13,
@@ -106,6 +127,27 @@ db "X             ",13,
 db "X             ",13,
 db "X             ",13,
 db "X             ",13,0
+
+imagem_aceitacao: 
+db "XXXXXXXXXXXXXX",13,
+db "X       X     ",13,
+db "X     XXXXX   ",13,
+db "X    X     X  ",13,
+db "X    X ^ ^ X  ",13,
+db "X    X ___ X  ",13,
+db "X     XXXXX   ",13,
+db "X       X     ",13,
+db "X       X     ",13,
+db "X     X X X   ",13,
+db "X    X  X  X  ",13,
+db "X   X   X   X ",13,
+db "X  X    X    X",13,
+db "X       X     ",13,
+db "X      X X    ",13,
+db "X     X       ",13,
+db "X    X        ",13,
+db "X   X         ",13,
+db "X  X          ",13,0
 
 imagem_morto: 
 db "XXXXXXXXXXXXXX",13,
@@ -366,7 +408,7 @@ forca_palavra times 10 db 0;Com a palavra da forca em conjunto
 salva_endereco dw 0 ;Isso e usado para manter a posição em um ponteiro de letras
 
 ;Diversos valores auxiliares
-letras_erradas times 4 db 0
+letras_erradas times 6 db 0
 adivinhar times 10 db 0
 vida db 0
 letra db 0
@@ -868,27 +910,36 @@ ret
 ;Principais funcoes do jogo
 boneco_vida:;Decide qual boneco vai imprimir
     cmp word [vida],0
-    je .tresvidas
+    je .zeroerro
     cmp word [vida],1
-    je .duasvidas
+    je .umerro
     cmp word [vida],2
-    je .umavida
+    je .doiserro
     cmp word [vida],3
-    je .semvida
+    je .treserro
+    cmp word [vida],4
+    je .quatroerro
+    cmp word [vida],5
+    je .cincoerro
+    jmp .end
 
-    .tresvidas:
+    .zeroerro:
     mov si, imagem_vazia
     jmp .end
-    .duasvidas:
-    mov si, imagem_erro1
+    .umerro:
+    mov si, imagem_negacao
     jmp .end
-    .umavida:
-    mov si, imagem_erro2
+    .doiserro:
+    mov si, imagem_ira
     jmp .end
-    .semvida:
-    mov si, imagem_erro3
+    .treserro:
+    mov si, imagem_barganha
     jmp .end
-
+    .quatroerro:
+    mov si, imagem_depressao
+    jmp .end
+    .cincoerro:
+    mov si, imagem_aceitacao
     .end:
 ret
 jogo_tela:;Imprime os textos nao mutaveis do jogo
@@ -919,7 +970,7 @@ jogo_principal:;aqui forca palavra deve estar com as adivinhadas
     mov cx,[valor]
     mov al, ' '
     mov di, letras_erradas
-    times 3 stosb
+    times 5 stosb
     mov di, adivinhar
 
     .preencher:
@@ -934,7 +985,7 @@ jogo_principal:;aqui forca palavra deve estar com as adivinhadas
     .loop:
     ;Imprimir a tela
     mov byte [letra],0
-    cmp byte [vida], 4
+    cmp byte [vida], 6
     je .perdeu
     call jogo_tela
     mov dh, 13
@@ -1149,7 +1200,7 @@ start:
     mov di, adivinhar
     times 10 stosb
     mov di,letras_erradas
-    times 3 stosb
+    times 5 stosb
 
     ;testes devem ficar antes
     call tela_inicial

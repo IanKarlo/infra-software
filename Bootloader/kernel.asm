@@ -1,12 +1,12 @@
-/*  
-    Grupo:
-    Alef Gabryel (aglc)
-    Ian Karlos (ikts)   
-    Thales Christ (tcsr)
-*/
-
 org 0x7e00
 jmp 0x0000:start
+
+ 
+; Grupo:
+; Alef Gabryel (aglc)
+; Ian Karlos (ikts)   
+; Thales Christ (tcsr)
+
 
 data: 
 ;Usuario

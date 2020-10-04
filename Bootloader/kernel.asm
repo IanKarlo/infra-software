@@ -1085,22 +1085,20 @@ jogo_principal:;aqui forca palavra deve estar com as adivinhadas
     call comp
     je .ganhou
 
-    ; ;Colocar uma carinha e contar como erro
+    ;Colocar uma carinha e contar como erro
+    mov cx,[vida]
+    mov di, letras_erradas
+    .erro_frase:
+    cmp cx, 0
+    je .out
+    dec cx
+    inc di
+    jmp .erro_frase
+    .out:
+    mov al,'1'
+    mov [di],al
+    inc byte [vida]
 
-    ; mov cx,[vida]
-    ; mov di, letras_erradas
-    ; .erro_frase:
-    ; cmp cx, 0
-    ; je .out
-    ; dec cx
-    ; inc di
-    ; jmp .erro_frase
-    ; .out:
-    ; mov al,'1'
-    ; mov [di],al
-    ; inc byte [vida]
-
-    ;retirado pois assim faz o jogo mais "ganhavel"
     jmp .loop
 
     .perdeu:

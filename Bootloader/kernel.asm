@@ -397,7 +397,6 @@ lista_quantity dw 40 ;Quantas palavras tem, e necessario mudar isso para que fun
 texto_vitoria db "obrigado", 0
 texto_derrota db "derrota", 0
 QQ_tecla db "Aperte qualquer tecla para continuar", 0
-waiting db 13,"Waiting",13,"  for  ",13," input ", 0
 certeza db "E essa palavra que queres? 1-Sim 2-Nao", 0
 caso_numero db "Suportamos apenas letras. Aperte qualquer tecla para continuar", 0
 pergunta_palavra db "Nao deixe que vejam, max 9 letras:", 0
@@ -421,9 +420,7 @@ vida db 0
 letra db 0
 
 ;Funçoes gerais
-putchar: ;Coloca o caractere na tela; o al permanece o que pegou;
-            ;Precisa setar o bl antes
-            ;O cx e usado como contador
+putchar: ;Coloca o caractere na tela; o al permanece o que pegou; ;Precisa setar o bl antes ;O cx e usado como contador
     mov ah, 0x0e
     cmp al, 0x8
     je .backspace
@@ -1205,7 +1202,7 @@ start:
     mov di, adivinhar
     times 10 stosb
     mov di,letras_erradas
-    times 5 stosb
+    times 6 stosb
 
     ;testes devem ficar antes
     call tela_inicial

@@ -34,16 +34,21 @@ int main() {
     int n;
 
     if (pthread_mutex_init(&lock, NULL) != 0) {
-      printf("\n mutex init failed\n");
+      puts("\n Erro na inicialização do mutex!\n");
       return 1;
     }
 
     printf("Digite a quantidade de threads: ");
     scanf("%d", &n);
 
+    if(n < 0) {
+      puts("Valor invalido!");
+      exit(-1);
+    }
+
     threads = (pthread_t*) malloc(n * sizeof(pthread_t));
     if(threads == NULL){
-      printf("Erro de alocação!\nPrograma encerrado!\n");
+      puts("Erro de alocação!\nPrograma encerrado!");
       exit(-1);
     }
 

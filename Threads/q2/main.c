@@ -5,8 +5,10 @@
 #include <string.h>
 #include "ansi-functions.h"
 
+//Todos começam na posicao 1 para facilitar o entendimento
 pthread_t *threads;
 pthread_mutex_t *mutexes;
+pthread_t *temporizadores;
 int total_linhas, total_arquivos, total_threads;
 FILE** files;
 int* nums;
@@ -48,6 +50,7 @@ int main(void)
     //Criação dos arrays;
     mutexes = (pthread_mutex_t*) malloc(sizeof(pthread_mutex_t) * (total_linhas+1));
     threads = (pthread_t*) calloc(total_threads+1,sizeof(pthread_t));
+    temporizadores = (pthread_t*) calloc(total_linhas+1,sizeof(pthread_t));
     for(int i=0;i<=total_linhas;i++){pthread_mutex_init(&mutexes[i],NULL);}
 
     //Criaçao de threads
@@ -56,12 +59,14 @@ int main(void)
 
     //Unir as threads de threads
     for(int i=0;i<=total_threads;i++) pthread_join(threads[i],NULL);
+    for(int i=0;i<=total_linhas;i++){pthread_join(temporizadores[i],NULL);}
 
-    //Libera todas as memorias alocadas /Pode causar double free ou pointer invalid por causa de racing conditions
+    //Libera todas as memorias alocadas
     for(int i=0;i<=7;i++){pthread_mutex_destroy(&mutexes[i]);}
     for(int i=1;i<=total_arquivos;i++){fclose(files[i]);}
     free(files);
     free(threads);
+    free(temporizadores);
     free(nums);
     pthread_exit(NULL);
 }
@@ -69,7 +74,6 @@ int main(void)
 void *funcao(void* arg){
     int arq = *((int*) arg);
     int linha;
-    pthread_t temporizadores[total_linhas+1];
 
     imprimir str;
     for(int i=arq;i<=total_arquivos;i+=total_threads){
@@ -82,8 +86,6 @@ void *funcao(void* arg){
 
         }
     }
-
-    for(int i=0;i<=total_linhas;i++){pthread_join(temporizadores[i],NULL);}
     pthread_exit(NULL);
 }
 

@@ -4,6 +4,7 @@
 #include <pthread.h>
 #include <string.h>
 #define MAX 100
+
 typedef struct thread_data{
     int id;
 }thread_data;
@@ -15,14 +16,13 @@ char s1[MAX];
 char s2[MAX];
 int n1,n2;
 int qnt_threads;
+
 void * substrings (void * arg){
     int * t = (int*) arg;
     int i,j;
-    
     for(i=*t;i<=(n1-n2);i+=qnt_threads){
         for(j=0;j<n2;j++){
             if(s1[i+j] == s2[j]){
-                
                 if(j == n2-1){
                     pthread_mutex_lock(&lock);
                     counter++;
@@ -32,14 +32,11 @@ void * substrings (void * arg){
             else {
                 j = n2;
             }         
-            
-            
         }
     }
-    
-     
     pthread_exit(NULL);
 }
+
 int main(){
     
     int i,j;
@@ -65,13 +62,6 @@ int main(){
             pthread_create(&threads[i],NULL,substrings,&id[i]);
         }
         for(j = 0;j < qnt_threads;j++) pthread_join(threads[j],NULL);
-    
-        printf("existem %d substrings\n",counter);
-        
-    
-    
+        printf("existem %d substrings\n",counter);   
     free(threads);
-
-
-
 }

@@ -1,0 +1,1 @@
+Tire os testes das pastas, e coloque os nomes na hora que pedir o arquivo.

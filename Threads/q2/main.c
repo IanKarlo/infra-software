@@ -11,7 +11,9 @@ int total_linhas, total_arquivos, total_threads;
 FILE** files;
 int* nums;
 
+
 void *funcao(void* args);
+void *temporizador(void* mutex);
 
 int main(void)
 {
@@ -55,7 +57,7 @@ int main(void)
     //Unir as threads de threads
     for(int i=0;i<=total_threads;i++) pthread_join(threads[i],NULL);
 
-    //Libera todas as memorias alocadas
+    //Libera todas as memorias alocadas /Pode causar double free ou pointer invalid por causa de racing conditions
     for(int i=0;i<=7;i++){pthread_mutex_destroy(&mutexes[i]);}
     for(int i=1;i<=total_arquivos;i++){fclose(files[i]);}
     free(files);
@@ -65,19 +67,28 @@ int main(void)
 }
 
 void *funcao(void* arg){
-    int linha = *((int*) arg);
+    int arq = *((int*) arg);
+    int linha;
+    pthread_t temporizadores[total_linhas+1];
+
     imprimir str;
-    for(int i=linha;i<=total_arquivos;i+=total_threads){
+    for(int i=arq;i<=total_arquivos;i+=total_threads){
             while(fscanf(files[i]," %d", &linha)!=EOF){
                 fscanf(files[i]," %s %s %s", str.codigo,str.cidade,str.horario);
                 pthread_mutex_lock(&mutexes[linha]);
                 str.linha=linha;
                 func_main(total_linhas,str);
-                sleep(2); //Tentar depois implementar um mutex para a linha e não para a thread
-                pthread_mutex_unlock(&mutexes[linha]);
+                pthread_create(&temporizadores[linha],NULL,temporizador,&mutexes[linha]);
 
         }
     }
-    
+
+    for(int i=0;i<=total_linhas;i++){pthread_join(temporizadores[i],NULL);}
+    pthread_exit(NULL);
+}
+
+void *temporizador(void* mutex){
+    sleep(2);
+    pthread_mutex_unlock((pthread_mutex_t*) mutex);
     pthread_exit(NULL);
 }

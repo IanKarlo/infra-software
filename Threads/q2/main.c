@@ -7,69 +7,77 @@
 
 pthread_t *threads;
 pthread_mutex_t *mutexes;
-imprimir* str;
-int total;
+int total_linhas, total_arquivos, total_threads;
+FILE** files;
+int* nums;
 
 void *funcao(void* args);
 
 int main(void)
 {
-    start(); //Funcao para colocar a quantidade de linha
-    int quant_arquivos;
-    printf("Quantos arquivos, serao? ");
-    scanf(" %d", &quant_arquivos);
-    
-    FILE **file = (FILE**) malloc(sizeof(file)*quant_arquivos);
-    for(int i=0;i<quant_arquivos;i++){
-        printf("Digite o nome do arquivo (%d): ", i);
-        char frase[30];
-        scanf(" %s",frase);
-        file[i] = fopen(frase,"r");
-    }
+    start();
 
-    int linha;
-    printf("Quantas linhas no total?: ");
-    scanf(" %d", &total);
-    threads = (pthread_t *) malloc( sizeof(pthread_t)*total);
-    mutexes = (pthread_mutex_t *) malloc( sizeof(pthread_mutex_t) * total);
-    for(int i=0;i<total;i++) pthread_mutex_init(&mutexes[i],NULL);
-    str = (imprimir*) malloc(sizeof(imprimir) * total);
+    //Pegar valores
+    printf("Quantos arquivos?: ");
+    scanf(" %d", &total_arquivos);
+    printf("Quantas threads?: ");
+    scanf(" %d", &total_threads);
+    printf("Quantos linhas?: ");
+    scanf(" %d", &total_linhas);
 
-
-    //Une tudo em um arquivo só
-    char tudo[40];
-    FILE* novo = fopen("tudo.txt","w");
-    for(int i=0;i<quant_arquivos;i++){
-        while(fscanf(file[i]," %[^\n]\n", tudo) != EOF){
-            fprintf(novo,"%s\n",tudo);
-        }
-    }
-    fclose(novo);
-
-    //Apagar tudo antes de começar
+    //Apagar tudo
     ret_pos();
     erase_display();
 
-    //Começa agora os casos
-    novo = fopen("tudo.txt","r");
-    while(fscanf(novo," %d", &linha) != EOF){
-        fscanf(novo," %s %s %s", str[linha-1].codigo, str[linha-1].cidade, str[linha-1].horario);
-        str[linha-1].linha = linha;
-        pthread_create(&threads[linha-1],NULL,funcao,&linha);
-        pthread_join(threads[linha-1],NULL);
+    //Pegar arquivos;
+    char arquivo_nome[30];
+    files = (FILE**) malloc((total_arquivos+1)*sizeof(FILE*));
+    for(int i=1;i<=total_arquivos;i++){
+        printf("Nome do arquivo (%d): ",i);
+        scanf(" %s",arquivo_nome);
+        files[i]=fopen(arquivo_nome,"r");
     }
-    
-    for (int i = 0; i<total;i++) pthread_join(threads[i],NULL);
+
+    //apagar tudo
+    ret_pos();
+    erase_display();
+    first_print(total_linhas);
+
+    //Criação dos arrays;
+    mutexes = (pthread_mutex_t*) malloc(sizeof(pthread_mutex_t) * (total_linhas+1));
+    threads = (pthread_t*) calloc(total_threads+1,sizeof(pthread_t));
+    for(int i=0;i<=total_linhas;i++){pthread_mutex_init(&mutexes[i],NULL);}
+
+    //Criaçao de threads
+    nums = (int*) calloc(total_threads+1, sizeof(int));
+    for(int i=1;i<=total_threads;i++){nums[i] = i; pthread_create(&threads[i],NULL,funcao,&nums[i]);}
+
+    //Unir as threads de threads
+    for(int i=0;i<=total_threads;i++) pthread_join(threads[i],NULL);
+
     //Libera todas as memorias alocadas
-    free(file);
-    free(mutexes);
+    for(int i=0;i<=7;i++){pthread_mutex_destroy(&mutexes[i]);}
+    for(int i=1;i<=total_arquivos;i++){fclose(files[i]);}
+    free(files);
     free(threads);
-    free(str);
-    remove("tudo.txt");
+    free(nums);
+    pthread_exit(NULL);
 }
 
-void *funcao(void* args){
-    int *linha = (int*) args;
-    func_main(total,str[(*linha)-1]);
+void *funcao(void* arg){
+    int linha = *((int*) arg);
+    imprimir str;
+    for(int i=linha;i<=total_arquivos;i+=total_threads){
+            while(fscanf(files[i]," %d", &linha)!=EOF){
+                fscanf(files[i]," %s %s %s", str.codigo,str.cidade,str.horario);
+                pthread_mutex_lock(&mutexes[linha]);
+                str.linha=linha;
+                func_main(total_linhas,str);
+                sleep(2); //Tentar depois implementar um mutex para a linha e não para a thread
+                pthread_mutex_unlock(&mutexes[linha]);
+
+        }
+    }
+    
     pthread_exit(NULL);
 }

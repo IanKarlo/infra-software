@@ -42,10 +42,10 @@ int main(){
     int i,j;
     
     printf("String 1:");
-    scanf("%s",s1);
+    scanf(" %[^\n]",s1);
     do{
     printf("String 2:");
-    scanf("%s",s2);
+    scanf(" %[^\n]",s2);
     }while(strlen(s2)>strlen(s1));
 
     n1 = strlen(s1);

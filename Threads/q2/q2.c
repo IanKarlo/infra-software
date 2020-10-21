@@ -25,6 +25,7 @@ int main(void)
     scanf(" %d", &total_threads);
     printf("Quantos linhas?: ");
     scanf(" %d", &total_linhas);
+    if(total_threads>total_arquivos) total_threads=total_arquivos;
 
     //Pegar arquivos;
     files = (FILE**) malloc((total_arquivos+1)*sizeof(FILE*));

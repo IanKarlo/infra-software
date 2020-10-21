@@ -1,30 +1,30 @@
-12
-204MXF Luxemburgo 10:20
-17
-557VOX St.Petsbu. 22:32
-14
-949MEX NovaYork 00:09
-2
-816HTR Tokyo 21:09
-12
-349MZM Estocolmo 20:39
-17
-333KMJ Berlim 10:23
-12
-413XVD Berlim 17:27
+15
+709XJF Luxemburgo 12:24
+8
+218TCQ St.Petsbu. 12:09
 11
-613SPG Recife 15:22
-18
-308QSF Madri 01:57
-20
-853CAK Paris 02:14
+771NSG St.Petsbu. 13:11
+8
+084URF Seoul 06:52
+15
+605TWX St.Petsbu. 09:38
+7
+936SCL NovaYork 13:39
+10
+710NBW Luxemburgo 10:41
+4
+698AMT Berlim 03:32
+12
+477PTH Madri 16:28
+15
+970EEB Madri 08:33
 9
-393MUD NovaYork 20:08
-1
-001OUH Luxemburgo 10:58
-3
-616XZS St.Petsbu. 05:25
-20
-421JXX Luxemburgo 14:02
-18
-898COD NovaYork 07:45
+065VKB Estocolmo 21:59
+14
+019RSB Nice 15:22
+7
+921YRB St.Petsbu. 02:40
+6
+193TYK St.Petsbu. 20:33
+5
+448KLR Luxemburgo 23:53

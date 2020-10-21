@@ -1,0 +1,20 @@
+#Para o codigo funcionar a soma dos elementos x(i!=j), dividido pelo elemento x(i==j) deve dar <1
+
+#Dimensao das matrizes
+10
+
+#Coloque aqui o (b)
+25 35 16 73 84 33 37 123 267 17 
+
+#Coloque aqui o (A)
+10 1 1 1 1 1 1 1 1 1  
+1 10 1 1 1 1 1 1 1 1  
+1 1 10 1 1 1 1 1 1 1
+1 1 1 10 1 1 1 1 1 1
+1 1 1 1 10 1 1 1 1 1 
+1 1 1 1 1 10 1 1 1 1
+1 1 1 1 1 1 10 1 1 1 
+1 1 1 1 1 1 1 10 1 1 
+1 1 1 1 1 1 1 1 10 1 
+1 1 1 1 1 1 1 1 1 10
+

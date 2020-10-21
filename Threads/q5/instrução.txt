@@ -1,0 +1,2 @@
+O matriz.txt é o input.
+O modifique caso queira testar outras matrizes

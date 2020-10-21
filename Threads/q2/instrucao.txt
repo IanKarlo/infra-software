@@ -1,0 +1,4 @@
+Rode primeiro o arquivo exgen.c (example generator), especificando os parametros. 
+Ele gerara diversos exemplos na pastas "example"
+Na hora de rodar a questao selecione quantos arquivos você quer, 
+ele sempre lê obedecendo a ordem filexx.txt caso queira adicionar ou modificar um manualmente

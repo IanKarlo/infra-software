@@ -7,6 +7,7 @@
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t empty = PTHREAD_COND_INITIALIZER, fill = PTHREAD_COND_INITIALIZER;
 int producao=0, consumo=0;
+short int flag=0;
 
 typedef struct Elem
 {
@@ -78,24 +79,27 @@ void display(Elem *head) //Serve para visualização
 void *consumer(void *q){
     int v;
     BlockingQueue* Q = (BlockingQueue*) q;
-    for (;;consumo++) {
+    while(1){
         pthread_mutex_lock(&mutex);
+        consumo++;
         v = takeBlockingQueue(Q);
-        printf("Consumiu %d: ",v);
-        display(Q->head);
+        printf("Consumiu %d\n",v);
         pthread_mutex_unlock(&mutex);
+        if (flag) break;
     }
+    printf("Consumidor terminou\n");
     pthread_exit(NULL);
 }
 
 void *producer(void *q) {
     BlockingQueue* Q = (BlockingQueue*) q;
-    for(;; producao++) {
+    while(1){
         pthread_mutex_lock(&mutex);
+        producao++;
         putBlockingQueue(Q,producao);
-        printf("Produziu %d: ",producao);
-        display(Q->head);
+        printf("Produziu %d\n",producao);
         pthread_mutex_unlock(&mutex);
+        if (flag) break;
     }
     printf("Produtor terminou\n");
     pthread_exit(NULL);
@@ -122,15 +126,21 @@ int main()
     scanf(" %d",&Segundos);
 
     //Organizar as threads
-    int total=C*P;
+    int total=C+P;
     threads = (pthread_t *) malloc(sizeof(pthread_t)*C*P);
     for(int i = 0;i<C;i++){pthread_create(&threads[i],NULL,consumer,q);}
     for(int i = C;i<total;i++){pthread_create(&threads[i],NULL,producer,q);}
 
     sleep(Segundos);
+    flag=1;
 
-    for(int i=0;i<total;i++) pthread_cancel(threads[i]);
+    //Resultados
+    for(int i=0;i<total;i++) pthread_join(threads[i],NULL);
     free(threads);
-    free(q);
+
+    printf("\nQueue restante\n");
+    display(q->head);
+    freeQueue(q);
+    
     return 0;
 }

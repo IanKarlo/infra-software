@@ -23,7 +23,7 @@ int main(){
             fprintf(file,"%d\n",linha==0?1:linha);
             fprintf(file,"%d%d%d%c%c%c %s %02d:%02d\n",rand()%10,rand()%10,rand()%10,
                 letras[rand()%26],letras[rand()%26],letras[rand()%26],
-                cidades[rand()%12],rand()%25,rand()%60);
+                cidades[rand()%12],rand()%24,rand()%60);
         }
         fclose(file);
     }

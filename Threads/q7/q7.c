@@ -15,10 +15,11 @@ void* funcao(void* index);
 int main(){
     printf("Quantas de threads? ");
     scanf(" %d", &quantidade_threads);
-    char nome[30];
+    char nome[30],endereco[50]="Imagens/";
     printf("Qual o nome da imagem ppm? ");
     scanf(" %[^\n]",nome);
-    FILE *f = fopen(nome,"r");
+    strcat(endereco,nome);
+    FILE *f = fopen(endereco,"r");
     
     //Pega as informações basicas
     fscanf(f,"P3 %d %d %d",&largura,&altura,&maximo);
@@ -58,9 +59,7 @@ void* funcao(void* index){
     int i = *((int*) index);
     for(;i<largura*altura;i+=quantidade_threads){
         int tom_c = (int) red[i]*0.30 + green[i]*0.59 + blue[i]*0.11;
-        red[i]=tom_c;
-        green[i]=tom_c;
-        blue[i]=tom_c;
+        red[i]=green[i]=blue[i]=tom_c;
     }
     pthread_exit(NULL);
 }

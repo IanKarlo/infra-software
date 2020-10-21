@@ -1,20 +1,30 @@
-8
-006ROJ Berlim 07:20
-3
-455CYZ Berlim 15:51
+2
+162EOD Recife 15:43
+9
+448GVI St.Petsbu. 08:18
+9
+256SQP Madri 05:34
+6
+305XKN Seoul 17:55
+9
+280IEE Seoul 12:47
+11
+745CNL Luxemburgo 14:17
+5
+697GGP Nice 01:08
 1
-328ZBT Estocolmo 11:38
-6
-296YAF Seoul 13:54
-6
-845QVE Estocolmo 08:50
-6
-860MVX Berlim 21:23
-1
-220JDK NovaYork 12:06
+543MKF Estocolmo 21:58
+15
+761ZLH Berlim 18:49
 7
-919WKO St.Petsbu. 17:00
-6
-613STJ Recife 09:03
+945OFZ Estocolmo 05:55
+3
+773RLR Seoul 16:26
+1
+300SSC St.Petsbu. 09:46
+5
+879KMB St.Petsbu. 16:03
+1
+153SHA NovaYork 22:51
 4
-179LTS Estocolmo 20:06
+047KQY Seoul 17:45

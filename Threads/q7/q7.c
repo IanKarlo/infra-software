@@ -35,7 +35,6 @@ int main(){
         green[index]=g;
         blue[index]=b;
         nums[index]=index;
-        pthread_create(&threads[index],NULL,funcao,&nums[index]);
         index++;
     }
     for(int i=0;i<largura*altura;i++){pthread_create(&threads[index],NULL,funcao,&nums[i]);}

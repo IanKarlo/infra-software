@@ -1,4 +1,4 @@
-#Para o codigo funcionar a soma dos elementos x(i!=j), dividido pelo elemento x(i==j) deve dar <1
+#Para o codigo funcionar para cada linha da matriz a soma dos elementos x(i!=j), dividido pelo elemento x(i==j) deve dar <1
 
 #Dimensao das matrizes
 10

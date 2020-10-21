@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#include <sys/stat.h>
 
 int main(){
     char cidades[12][15] = {"Luxemburgo","Paris","Tokyo","Recife","NovaYork","Seoul","Berlim","Madri","Estocolmo","Madri","Nice","St.Petsbu."};
@@ -14,6 +15,7 @@ int main(){
     printf("Quantos casos por arquivo? ");
     scanf(" %d",&casos);
     //Formar os numeros
+    mkdir("example",0777);
     for(int i=1;i<=arquivos;i++){
         char nome[30];
         sprintf(nome,"example/file%02d.txt",i);

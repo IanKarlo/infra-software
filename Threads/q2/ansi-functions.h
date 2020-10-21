@@ -75,7 +75,7 @@ void first_print(int linhas){
 }
 
 void start(){
-    up(11); //Só para ficar no topo de algo
+    up(30); //Só para ficar no topo de algo
     save_pos();
     erase_display(); //Isso só funciona pra ficar tudo em uma mesma linha
 }

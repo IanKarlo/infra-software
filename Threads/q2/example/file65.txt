@@ -1,0 +1,30 @@
+10
+129UEL NovaYork 12:50
+18
+874GSC NovaYork 02:20
+14
+236NPH Madri 22:58
+6
+712VXW Seoul 19:54
+16
+640BAA Paris 04:18
+15
+503SOU St.Petsbu. 12:39
+16
+426NOL St.Petsbu. 04:30
+15
+730RZV Recife 09:38
+8
+072XFV Recife 04:44
+8
+383JWM Madri 00:46
+19
+644UYP Seoul 16:24
+8
+548KUI NovaYork 00:03
+13
+541ELK NovaYork 16:21
+4
+163PAF Berlim 21:25
+7
+050YXE Luxemburgo 09:29

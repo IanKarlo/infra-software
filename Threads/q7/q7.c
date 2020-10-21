@@ -38,6 +38,7 @@ int main(){
         pthread_create(&threads[index],NULL,funcao,&nums[index]);
         index++;
     }
+    for(int i=0;i<largura*altura;i++){pthread_create(&threads[index],NULL,funcao,&nums[i]);}
     for(int i=0;i<largura*altura;i++){pthread_join(threads[i],NULL);}
 
     //Imprime de volta

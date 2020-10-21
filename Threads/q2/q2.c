@@ -13,14 +13,11 @@ int total_linhas, total_arquivos, total_threads;
 FILE** files;
 int* nums;
 
-
 void *funcao(void* args);
 void *temporizador(void* mutex);
 
 int main(void)
 {
-    start();
-
     //Pegar valores
     printf("Quantos arquivos?: ");
     scanf(" %d", &total_arquivos);
@@ -29,22 +26,16 @@ int main(void)
     printf("Quantos linhas?: ");
     scanf(" %d", &total_linhas);
 
-    //Apagar tudo
-    ret_pos();
-    erase_display();
-
     //Pegar arquivos;
-    char arquivo_nome[30];
     files = (FILE**) malloc((total_arquivos+1)*sizeof(FILE*));
     for(int i=1;i<=total_arquivos;i++){
-        printf("Nome do arquivo (%d): ",i);
-        scanf(" %s",arquivo_nome);
-        files[i]=fopen(arquivo_nome,"r");
+        char nomes_arquivo[30];
+        sprintf(nomes_arquivo,"example/file%02d.txt",i);
+        files[i]=fopen(nomes_arquivo,"r");
     }
 
     //apagar tudo
-    ret_pos();
-    erase_display();
+    start();
     first_print(total_linhas);
 
     //Criação dos arrays;

@@ -62,7 +62,8 @@ void func_main(int total, imprimir str){
     }
     print_line(str.codigo,str.cidade,str.horario);
     reset();
-    next_line(total-str.linha+1); printf(" "); //Apenas para ir para lá
+    next_line(total-str.linha+1);
+    fflush(stdout);
     pthread_mutex_unlock(&mutex);
 }
 

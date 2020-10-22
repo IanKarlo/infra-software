@@ -100,9 +100,10 @@ int main(){
   //Reservar memoria
   threads = (threads_s *) malloc(sizeof(threads_s) * quant_threads);
   for (int i=0;i<quant_threads;i++) threads[i].livre=true;
+  for (int i=0;i<MAXSIZE;i++) res[i].reservado=false;
   
   //loop
-  char funcao[30], quit[]="quit", pegar[] = "pegar";
+  char funcao[30], quit[]="quit", pegar[] = "pegar", reset[] = "reset";
   int i;
   param str;
   pthread_create(&despachar_t, NULL, despachante, NULL);
@@ -112,6 +113,14 @@ int main(){
     scanf(" %s", funcao);
     if (!strcmp(funcao,quit)) break;
     else if (!strcmp(funcao,pegar)) {scanf(" %d", &i); pegarResultado(i);}
+    else if (!strcmp(funcao,reset)) {
+      for (int i=0;i<quant_threads;i++) pthread_cancel(threads[i].thread);
+      pthread_cancel(despachar_t);
+      for (int i=0;i<MAXSIZE;i++) res[i].reservado=false;
+      buffer_index = criar_index = 0;
+      pthread_create(&despachar_t, NULL, despachante, NULL);
+      printf("Todos os resultados foram resetados\n");
+    }
     //Formar funcoes
     else{
       scanf(" %d %d",&str.first,&str.second);

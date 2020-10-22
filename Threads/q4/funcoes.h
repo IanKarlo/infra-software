@@ -1,6 +1,8 @@
 #include <math.h>
 #include <stdio.h>
 
+#define FUNC_QUANT 6
+
 int add(int x,int y) {return x+y;}
 int mul(int x,int y) {return x*y;}
 int dvs(int x,int y) {return x/y;}

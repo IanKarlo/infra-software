@@ -15,8 +15,10 @@ void prev_line(int n){printf("\u001b[%dF",n);}
 void save_pos(){printf("\u001b[s");}
 void ret_pos(){printf("\u001b[u");}
 
+void reset(){printf("\e[0m");fflush(stdout);}
+
 void erase_line(){printf("\u001b[2K");}
-void erase_display(){printf("\u001b[2J");fflush(stdout);}
+void erase_display(){printf("\u001b[2J");reset();fflush(stdout);}
 
 // \033[38;2;<r>;<g>;<b>m     #Select RGB foreground color
 // \033[48;2;<r>;<g>;<b>m     #Select RGB background color
@@ -29,7 +31,6 @@ void print_green()  {printf("\033[38;2;0;0;0m"); printf("\033[48;2;0;255;0m");}
 void print_black()  {printf("\033[38;2;255;255;255m"); printf("\033[48;2;0;0;0m");}
 void print_cyan()   {printf("\033[38;2;0;0;0m"); printf("\033[48;2;0;255;255m");}
 
-void reset(){printf("\e[0m");fflush(stdout);}
 
 // imprimir tudo certinho
 typedef struct  imprimir{
@@ -75,7 +76,7 @@ void first_print(int linhas){
     for(int i=1;i<=linhas;i++){str.linha=i; func_main(linhas,str);}
 }
 
-void start(){
+void clear(){
     up(30); //Só para ficar no topo de algo
     save_pos();
     erase_display(); //Isso só funciona pra ficar tudo em uma mesma linha

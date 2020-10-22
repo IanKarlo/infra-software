@@ -39,10 +39,12 @@ int pegar(int id);
 void *executar(void *e);
 
 int main(){
-    start();
+    clear();
     srand(time(NULL));
     printf("Quantos nucleos? ");
     scanf(" %d", &quant_threads);
+    clear();
+
     threads = (pthread_t *) malloc(sizeof(pthread_t)*quant_threads);
     vetor = (short int*) malloc(sizeof(short int) * quant_threads);
     threads_mutex = (pthread_mutex_t*) malloc(sizeof(pthread_mutex_t)*quant_threads);
@@ -59,13 +61,14 @@ int main(){
     pthread_create(&despacharThread,NULL,despachar,NULL);
 
     //funcao principal
-    char funcao[50];
+    char funcao[50],resto[30];
     int x,y,id;
     Elem* e;
     char quit[] = "quit",pegar_str[]="pegar",clear_str[]="clear";
 
     while(loop){
-      printf(">>>");fflush(stdout);
+      fflush(stdout);
+      printf(">>> "); fflush(stdout);
       scanf(" %[^(]",funcao);
       //organizar casos
       if (!strcmp(funcao, quit)) loop=0;
@@ -77,7 +80,7 @@ int main(){
         }
         else printf("Nao existe resposta com esse id\n");
       }
-      else if(!strcmp(funcao,clear_str)){ret_pos();erase_display();}
+      else if(!strcmp(funcao,clear_str)){clear(); scanf(" %[^\n]",resto);}
       else{ 
         scanf("(%d,%d)",&x,&y);
         e = (Elem*) malloc(sizeof(Elem));
@@ -102,6 +105,7 @@ int main(){
         pthread_mutex_destroy(&threads_mutex[i]);
     }
     pthread_cancel(despacharThread);
+    clear();
 
     free(threads);
     free(vetor);
@@ -119,6 +123,8 @@ void *despachar(void *arg){
             if (ocupadas == quant_threads) pthread_cond_wait(&acabou,&despachar_mutex);
         }while (ocupadas == quant_threads);
         pthread_cancel(threads[ocupadas]);
+        e->vetor = ocupadas;
+        vetor[ocupadas] = 1;
         pthread_create(&threads[ocupadas],NULL,executar,e);
     }
     pthread_exit(NULL);

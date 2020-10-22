@@ -75,7 +75,7 @@ void first_print(int linhas){
     for(int i=1;i<=linhas;i++){str.linha=i; func_main(linhas,str);}
 }
 
-void start(){
+void clear(){
     up(30); //Só para ficar no topo de algo
     save_pos();
     erase_display(); //Isso só funciona pra ficar tudo em uma mesma linha

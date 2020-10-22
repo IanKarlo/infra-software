@@ -8,9 +8,10 @@
 typedef struct Elem
 {
     int x,y;
-    int (*funcao)();
+    int (*funcao)(int,int);
     int resultado;
     int id;
+    int vetor;
     struct Elem *next;
 }Elem;
 typedef struct Queue
@@ -35,26 +36,6 @@ Queue *newQueue(int maxsize)
 }
 
 int isempty(Queue *q) {return (q->first == NULL);}
-
-void putQueue_complete(Queue *q, int x, int y, int id, int (*func)(), int resultado)//O resultado e temporario
-{
-    // pthread_mutex_lock(&mutex);
-    Elem *temp;
-    temp = (Elem*) malloc(sizeof(Elem));
-
-    //Setting up
-    temp->next = NULL;
-    temp->x = x;
-    temp->y = y;
-    temp->id = id;
-    temp->funcao = func;
-    temp->resultado = resultado; //temporario
-
-    if(!isempty(q)) {q->last->next = temp; q->last = temp;}
-    else {q->first = q->last = temp;}
-    q->size++;
-    // pthread_mutex_unlock(&mutex); 
-}
 
 void putQueue_node(Queue *q, Elem* e){
     if(!isempty(q)) {q->last->next = e; q->last = e;}

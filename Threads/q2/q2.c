@@ -36,7 +36,7 @@ int main(void)
     }
 
     //apagar tudo
-    start();
+    clear();
     first_print(total_linhas);
 
     //Criação dos arrays;

@@ -69,20 +69,20 @@ int main(){
     while(loop){
       fflush(stdout);
       printf(">>> "); fflush(stdout);
-      scanf(" %[^(]",funcao);
+      scanf(" %s",funcao);
       //organizar casos
       if (!strcmp(funcao, quit)) loop=0;
       else if(!strcmp(funcao,pegar_str)) {
-        scanf("(%d)",&id); 
+        scanf(" %d",&id); 
         if (isthere(bufferQueue, id)||isthere(prontos,id)){
           int resposta = pegar(id);
           printf("Resultado = %d\n",resposta);
         }
         else printf("Nao existe resposta com esse id\n");
       }
-      else if(!strcmp(funcao,clear_str)){clear(); scanf(" %[^\n]",resto);}
+      // else if(!strcmp(funcao,clear_str)){clear(); scanf(" %[^\n]",resto);}
       else{ 
-        scanf("(%d,%d)",&x,&y);
+        scanf(" %d %d",&x,&y);
         e = (Elem*) malloc(sizeof(Elem));
         e->x=x; e->y=y; 
         do{e->id=rand()%100;}while(isthere(bufferQueue,e->id)||isthere(prontos, e->id));
@@ -152,6 +152,6 @@ void *executar(void *e) {
     putQueue_node(prontos,node);
     pthread_mutex_unlock(&pronto_mutex);
     vetor[node->vetor] = 0;
-    pthread_cond_signal(&acabou);
+    pthread_cond_broadcast(&acabou);
     pthread_exit(NULL);
 }

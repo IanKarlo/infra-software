@@ -1,54 +1,92 @@
-#include <pthread.h>
 #include <stdio.h>
-#include <unistd.h>
+#include <stdlib.h>
+#include "queue.h"
+#include <pthread.h>
+#include <string.h>
 
-int counter = 0;
-pthread_cond_t signal1 = PTHREAD_COND_INITIALIZER,signal2=PTHREAD_COND_INITIALIZER;
-pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+//Paramentros
+int quant_threads, ocupadas = 0;
+pthread_t despacharThread;
+pthread_t *threads;
 
-void *add(void* arg){
-    for(int i=0;;i++){
-        pthread_mutex_lock(&mutex);
-        pthread_cond_wait(&signal1,&mutex);
-        counter++;
-        pthread_
-        pthread_mutex_unlock(&mutex);
-        pthread_cond_signal(&signal1);
-    }
-    pthread_exit(NULL);
-}
+pthread_mutex_t despachar_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t pronto_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t *threads_mutex;
+
+pthread_cond_t acabou = PTHREAD_COND_INITIALIZER;
+pthread_cond_t preencheu = PTHREAD_COND_INITIALIZER;
+short int loop = 1;
+
+//Gerenciamento de queues
 
 
-void *sub(void* arg){
-    for(int i=0;;i++){
-        pthread_mutex_lock(&mutex);
-        if (i>0) pthread_cond_wait(&signal1,&mutex);
-        counter--;
-        getchar();
-        printf("Counter %d",counter);
-        fflush(stdout);
-        pthread_mutex_unlock(&mutex);
-        pthread_cond_signal(&signal1);
-    }
-    pthread_exit(NULL);
-}
-
-void *reach(void *arg){
-    printf("chegou\n");
-    pthread_barrier_wait((pthread_barrier_t*) arg);
-    pthread_exit(NULL);
-}
+Queue *bufferQueue ;
+Queue *prontos;
 
 int main(){
-    pthread_t t1,t2,t3;
-    pthread_barrier_t barrier;
-    pthread_barrier_init(&barrier,NULL,3);
-    pthread_create(&t1,NULL,reach,&barrier);
-    pthread_create(&t2,NULL,reach,&barrier);
-    pthread_create(&t3,NULL,reach,&barrier);
-    pthread_join(t1,NULL);
-    pthread_join(t2,NULL);
-    pthread_join(t3,NULL);
-    printf("%d\n",counter);
-    pthread_barrier_destroy(&barrier);
+    printf("Quantos nucleos? ");
+    scanf(" %d", &quant_threads);
+    threads = (pthread_t *) malloc(sizeof(pthread_t)*quant_threads);
+    threads_mutex = (pthread_mutex_t*) malloc(sizeof(pthread_mutex_t)*quant_threads);
+    for(int i=0;i<quant_threads;i++) pthread_mutex_init(&threads_mutex[i],NULL);
+
+    //Queues
+    bufferQueue = newQueue(-1);
+    prontos = newQueue(-1);
+
+    //Colocar em funcoes
+    pthread_create(&despacharThread,NULL,despachar,NULL);
+    
+    //liberar memoria alocada
+    for(int i=0;i<quant_threads;i++) {
+        pthread_join(threads[i],NULL);
+        pthread_mutex_destroy(&threads_mutex[i]);
+    }
+    pthread_join(despacharThread,NULL);
+
+    free(threads);
+    free(threads_mutex);
+    freeQueue(bufferQueue);
+    freeQueue(prontos);
+}
+
+void *despachar(void *arg){
+    ocupadas = 0;
+    int array[quant_threads];
+    for(int i=0;i<quant_threads;i++) array[i]=0;
+    while(loop){
+        while (bufferQueue->size==0) pthread_cond_wait(&preencheu,&despachar_mutex);
+        Elem* e = takeQueue_first(bufferQueue);
+        do{ //COmo sinalizar isso????
+            for(int i=0;i<quant_threads;i++) if(!array[i]){break;} else{ocupadas++;}
+            if (ocupadas == quant_threads) pthread_cond_wait(&acabou,&despachar_mutex);
+        }while (ocupadas == quant_threads);
+        pthread_create(&threads[ocupadas],NULL,executar,e);
+        pthread_cond_signal(&acabou);
+    }
+    pthread_exit(NULL);
+}
+
+void agendar(Elem *e){
+    pthread_mutex_lock(&pronto_mutex);
+    putQueue_node(prontos,e);
+    pthread_mutex_unlock(&pronto_mutex);
+    pthread_cond_signal(&preencheu);
+}
+
+int pegar(int id){
+    pthread_mutex_lock(&pronto_mutex);
+    while (!isthere(prontos,id)){pthread_cond_wait(&acabou,&pronto_mutex);}
+    int e = takeQueue_key(prontos,id);
+    pthread_mutex_unlock(&pronto_mutex);
+    return e;
+}
+
+void *executar(void *e) {
+    Elem *node = (Elem*)e;
+    pthread_mutex_lock(&pronto_mutex);
+    putQueue_node(prontos,e);
+    pthread_mutex_unlock(&pronto_mutex);
+    pthread_cond_signal(&acabou);
+    pthread_exit(NULL);
 }

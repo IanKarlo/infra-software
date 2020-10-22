@@ -90,7 +90,6 @@ int takeQueue_key(Queue *q, int id){
         q->size--;
         q->first=q->first->next;
         free(tmp);
-        printf("Chegou");
         return n;
     }else{
         while(id != tmp->id){anterior = tmp; tmp=tmp->next;}

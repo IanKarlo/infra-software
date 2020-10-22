@@ -122,7 +122,7 @@ void *despachar(void *arg){
             for(ocupadas=0;ocupadas<quant_threads;ocupadas++) if (!vetor[ocupadas]) break;
             if (ocupadas == quant_threads) pthread_cond_wait(&acabou,&despachar_mutex);
         }while (ocupadas == quant_threads);
-        pthread_cancel(threads[ocupadas]);
+        pthread_join(threads[ocupadas],NULL);
         e->vetor = ocupadas;
         vetor[ocupadas] = 1;
         pthread_create(&threads[ocupadas],NULL,executar,e);

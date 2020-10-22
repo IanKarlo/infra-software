@@ -1,157 +1,128 @@
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "queue.h"
-#include "funcoes.h"
-#include <pthread.h>
 #include <string.h>
-#include <time.h>
-#include "ansi-functions.h"
-
-#define QUANT_FUNCOES 6
-
-//Paramentros
-int quant_threads, ocupadas = 0;
-pthread_t despacharThread;
-pthread_t *threads;
-short int *vetor;
-
-//Funcoes lista
-char lista[][QUANT_FUNCOES] = {"add","sub","mul","div","elv","sum"};
-int (*lista_funcoes[QUANT_FUNCOES])(int,int) = {add,sub,mul,dvs,elv,sum}; 
-
-pthread_mutex_t despachar_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t pronto_mutex = PTHREAD_MUTEX_INITIALIZER;
-pthread_mutex_t *threads_mutex;
-
-pthread_cond_t acabou = PTHREAD_COND_INITIALIZER;
-pthread_cond_t preencheu = PTHREAD_COND_INITIALIZER;
-short int loop = 1;
-
-//Gerenciamento de queues
-Queue *bufferQueue ;
-Queue *prontos;
+#include <stdbool.h>
+#include "funcoes.h"
+#include <unistd.h>
 
 //funcoes
-void *executar(void *e);
-void *despachar(void *arg);
-void agendar(Elem *e);
-int pegar(int id);
-void *executar(void *e);
+int (*lista_funcoes[FUNC_QUANT]) (int,int) = {add,sub,mul,dvs,elv,sum};
+char nome_funcoes [][5]= {"add","sub","mul","div","pow","sum"};
+
+#define MAXSIZE 1000
+
+typedef struct elemento{
+  int x,y;
+  int (*func) (int,int);
+  bool pronto;
+  int id;
+  int thread;
+}elem;
+
+typedef struct threads{
+  pthread_t thread;
+  bool livre;
+}threads_s;
+
+typedef struct parametros{
+  int first,second;
+}param;
+
+typedef struct respostas{
+  int resultado;
+  bool pronto;
+  bool reservado;
+}respostas;
+
+//Parametros
+int buffer_index = 0, criar_index = 0,quant_threads;
+int maior_resposta=1;
+pthread_mutex_t despachar_mutex = PTHREAD_MUTEX_INITIALIZER, pegar_mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t acabou = PTHREAD_COND_INITIALIZER, preencheu = PTHREAD_COND_INITIALIZER;
+pthread_t despachar_t;
+threads_s *threads;
+elem buffer[MAXSIZE];
+respostas res[MAXSIZE];
+
+//funcoes
+void agendarFuncao(int (*func)(int,int), param str){
+  buffer[criar_index].x = str.first;
+  buffer[criar_index].y = str.second;
+  buffer[criar_index].func = func;
+
+  int id = criar_index;
+  buffer[criar_index].id = id;
+  res[id].pronto = false;
+  res[id].reservado = true;
+  criar_index++; if(criar_index == MAXSIZE) criar_index = 0;
+  
+  printf("O id desse resultado e (%d)\n",id);
+  pthread_cond_broadcast(&preencheu);
+}
+
+void pegarResultado(int id){
+  if (!res[id].reservado) {printf("Nao existe resultado para esse id\n"); return;}
+  while (!res[id].pronto) {pthread_cond_wait(&acabou, &pegar_mutex);} //Colocar um mutex
+  printf("O resultado e (%d)\n", res[id].resultado);
+}
+
+void *funcexec(void *arg){
+  sleep(5);
+  elem* e = (elem*) arg;
+  res[e->id].resultado = e->func(e->x,e->y);
+  res[e->id].pronto = true;
+  threads[e->thread].livre = true; 
+  //Sinalizar condicao
+  pthread_cond_broadcast(&acabou);
+  pthread_exit(NULL); 
+}
+
+void *despachante (void *arg){
+  int i;
+  while (true){
+    while (criar_index == buffer_index) {pthread_cond_wait(&preencheu, &despachar_mutex);} //colocar mutex
+    do{
+      for (i = 0; i<quant_threads; i++) if (threads[i].livre) break;
+      if (i==quant_threads) {pthread_cond_wait(&acabou, &despachar_mutex);} //colocar mutex
+    }while(i==quant_threads);
+    pthread_join(threads[i].thread, NULL);
+    threads[i].livre = false;
+    buffer[buffer_index].thread = i;
+    pthread_create(&threads[i].thread, NULL, funcexec, &buffer[buffer_index]);
+    buffer_index++; if (buffer_index==MAXSIZE) buffer_index = 0;
+  }
+}
 
 int main(){
-    clear();
-    srand(time(NULL));
-    printf("Quantos nucleos? ");
-    scanf(" %d", &quant_threads);
-    clear();
+  printf("Quantos nucleos? ");
+  scanf(" %d", &quant_threads);
+  //Reservar memoria
+  threads = (threads_s *) malloc(sizeof(threads_s) * quant_threads);
+  for (int i=0;i<quant_threads;i++) threads[i].livre=true;
+  
+  //loop
+  char funcao[30], quit[]="quit", pegar[] = "pegar";
+  int i;
+  param str;
+  pthread_create(&despachar_t, NULL, despachante, NULL);
 
-    threads = (pthread_t *) malloc(sizeof(pthread_t)*quant_threads);
-    vetor = (short int*) malloc(sizeof(short int) * quant_threads);
-    threads_mutex = (pthread_mutex_t*) malloc(sizeof(pthread_mutex_t)*quant_threads);
-    for(int i=0;i<quant_threads;i++) {
-      pthread_mutex_init(&threads_mutex[i],NULL);
-      vetor[i]=0;
+  while(1){
+    printf(">>> ");
+    scanf(" %s", funcao);
+    if (!strcmp(funcao,quit)) break;
+    else if (!strcmp(funcao,pegar)) {scanf(" %d", &i); pegarResultado(i);}
+    //Formar funcoes
+    else{
+      scanf(" %d %d",&str.first,&str.second);
+      for (i=0;i<FUNC_QUANT;i++) 
+        if (!strcmp(funcao,nome_funcoes[i])) break;
+      if (i!=FUNC_QUANT) agendarFuncao(lista_funcoes[i],str);
+      else printf("Funcao invalida\n");
     }
+  }
+  pthread_cancel(despachar_t);
 
-    //Queues
-    bufferQueue = newQueue(-1);
-    prontos = newQueue(-1);
-
-    //Colocar em funcoes
-    pthread_create(&despacharThread,NULL,despachar,NULL);
-
-    //funcao principal
-    char funcao[50],resto[30];
-    int x,y,id;
-    Elem* e;
-    char quit[] = "quit",pegar_str[]="pegar",clear_str[]="clear";
-
-    while(loop){
-      fflush(stdout);
-      printf(">>> "); fflush(stdout);
-      scanf(" %s",funcao);
-      //organizar casos
-      if (!strcmp(funcao, quit)) loop=0;
-      else if(!strcmp(funcao,pegar_str)) {
-        scanf(" %d",&id); 
-        if (isthere(bufferQueue, id)||isthere(prontos,id)){
-          int resposta = pegar(id);
-          printf("Resultado = %d\n",resposta);
-        }
-        else printf("Nao existe resposta com esse id\n");
-      }
-      // else if(!strcmp(funcao,clear_str)){clear(); scanf(" %[^\n]",resto);}
-      else{ 
-        scanf(" %d %d",&x,&y);
-        e = (Elem*) malloc(sizeof(Elem));
-        e->x=x; e->y=y; 
-        do{e->id=rand()%100;}while(isthere(bufferQueue,e->id)||isthere(prontos, e->id));
-        int i;
-        for(i=0;i<QUANT_FUNCOES;i++){
-          if (!strcmp(lista[i],funcao)) 
-          {e->funcao = lista_funcoes[i]; break;}
-        }
-        if (i==QUANT_FUNCOES) {printf("Operacao invalida\n"); free(e); e=NULL;}
-        if(e!=NULL){
-          agendar(e);
-          printf("O id dessa resposta e: %d\n",e->id);
-        }
-      }
-    }
-    
-    //liberar memoria alocada
-    for(int i=0;i<quant_threads;i++) {
-        pthread_join(threads[i],NULL);
-        pthread_mutex_destroy(&threads_mutex[i]);
-    }
-    pthread_cancel(despacharThread);
-    clear();
-
-    free(threads);
-    free(vetor);
-    free(threads_mutex);
-    freeQueue(bufferQueue);
-    freeQueue(prontos);
-}
-
-void *despachar(void *arg){
-    while(1){
-        while (bufferQueue->size == 0) pthread_cond_wait(&preencheu, &despachar_mutex);
-        Elem* e = takeQueue_first(bufferQueue);
-        do{
-            for(ocupadas=0;ocupadas<quant_threads;ocupadas++) if (!vetor[ocupadas]) break;
-            if (ocupadas == quant_threads) pthread_cond_wait(&acabou,&despachar_mutex);
-        }while (ocupadas == quant_threads);
-        pthread_join(threads[ocupadas],NULL);
-        e->vetor = ocupadas;
-        vetor[ocupadas] = 1;
-        pthread_create(&threads[ocupadas],NULL,executar,e);
-    }
-    pthread_exit(NULL);
-}
-
-void agendar(Elem *e){
-    pthread_mutex_lock(&pronto_mutex);
-    putQueue_node(bufferQueue,e);
-    pthread_mutex_unlock(&pronto_mutex);
-    pthread_cond_signal(&preencheu);
-}
-
-int pegar(int id){
-    pthread_mutex_lock(&pronto_mutex);
-    while (!isthere(prontos,id)) {pthread_cond_wait(&acabou,&pronto_mutex);}
-    int e = takeQueue_key(prontos,id);
-    pthread_mutex_unlock(&pronto_mutex);
-    return e;
-}
-
-void *executar(void *e) {
-    Elem *node = (Elem*) e;
-    pthread_mutex_lock(&pronto_mutex);
-    node->resultado = node->funcao(node->x,node->y);
-    putQueue_node(prontos,node);
-    pthread_mutex_unlock(&pronto_mutex);
-    vetor[node->vetor] = 0;
-    pthread_cond_broadcast(&acabou);
-    pthread_exit(NULL);
+  //liberar tudo
+  free(threads);
 }

@@ -1,17 +1,8 @@
-Esta representado como um terminal feito em python.
+A visualizacao e como um terminal de python
 
-Funções padronizadas:
-quit() = Finaliza o programa
-clear() = limpa a tela
-pegar(id) = pega a resposta do determinado id
+Funcoes de dois parametros que retornam um int.
+modelo: func x y
+lista suportadas: add,sub,mul,pow,div,sum
 
-As funcoes foram feitas para serem do tipo (int,int) -> int.
-Até agora possui
-
-add(x,y) = x+y
-sub(x,y) = x-y
-mul(x,y) = x*y
-dvs(x,y) = x/y
-
-elv(x,y) = x^y
-sum(x,y) = soma todos os numeros de [x,y] (incluindo o y)
+Todas as threads dormem por 5 segundos para simular um atraso
+pegar id = printa o resultado

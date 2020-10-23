@@ -36,11 +36,11 @@ typedef struct respostas{
 }respostas;
 
 //Parametros
-int buffer_index = 0, criar_index = 0,quant_threads;
-int maior_resposta=1;
+int buffer_index = 0, criar_index = 0, quant_threads;
 pthread_mutex_t despachar_mutex = PTHREAD_MUTEX_INITIALIZER, pegar_mutex = PTHREAD_MUTEX_INITIALIZER;
 pthread_cond_t acabou = PTHREAD_COND_INITIALIZER, preencheu = PTHREAD_COND_INITIALIZER;
 pthread_t despachar_t;
+
 threads_s *threads;
 elem buffer[MAXSIZE];
 respostas res[MAXSIZE];
@@ -108,13 +108,13 @@ int main(){
   param str;
   pthread_create(&despachar_t, NULL, despachante, NULL);
 
-  while(1){
+  while(true){
     printf(">>> ");
     scanf(" %s", funcao);
     if (!strcmp(funcao,quit)) break;
     else if (!strcmp(funcao,pegar)) {scanf(" %d", &i); pegarResultado(i);}
     else if (!strcmp(funcao,reset)) {
-      for (int i=0;i<quant_threads;i++) pthread_cancel(threads[i].thread);
+      for (int i=0;i<quant_threads;i++) {pthread_cancel(threads[i].thread); threads[i].livre=true;}
       pthread_cancel(despachar_t);
       for (int i=0;i<MAXSIZE;i++) res[i].reservado=false;
       buffer_index = criar_index = 0;

@@ -6,3 +6,6 @@ lista suportadas: add,sub,mul,pow,div,sum
 
 Todas as threads dormem por 5 segundos para simular um atraso
 pegar id = printa o resultado
+
+reset = limpa todos os arrays e resultados
+quit = acaba o programa

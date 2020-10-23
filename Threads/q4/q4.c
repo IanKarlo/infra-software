@@ -131,6 +131,7 @@ int main(){
     }
   }
   pthread_cancel(despachar_t);
+  for (i = 0; i<quant_threads;i++) pthread_join(threads[i].thread);
 
   //liberar tudo
   free(threads);

@@ -75,6 +75,7 @@ void *funcao(void* arg){
                 str.linha=linha;
                 func_main(total_linhas,str);
                 pthread_create(&temporizadores[linha],NULL,temporizador,&mutexes[linha]);
+
         }
     }
     pthread_exit(NULL);

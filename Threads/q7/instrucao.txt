@@ -1,2 +1,2 @@
 Coloque a imagem em PPM que você quer traduzir em imagens
-Em seguida digite o nome dela
+Em seguida digite o nome dela xxxx.ppm

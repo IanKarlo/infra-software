@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "funcoes.h"
 #include <unistd.h>
+#include <time.h>
 
 //funcoes
 int (*lista_funcoes[FUNC_QUANT]) (int,int) = {add,sub,mul,dvs,elv,sum};
@@ -68,7 +69,7 @@ void pegarResultado(int id){
 }
 
 void *funcexec(void *arg){
-  sleep(5);
+  sleep(rand()%10); //Simular tempo de execucao
   elem* e = (elem*) arg;
   res[e->id].resultado = e->func(e->x,e->y);
   res[e->id].pronto = true;
@@ -95,6 +96,7 @@ void *despachante (void *arg){
 }
 
 int main(){
+  srand(time());
   printf("Quantos nucleos? ");
   scanf(" %d", &quant_threads);
   //Reservar memoria

@@ -72,6 +72,7 @@ void *funcao(void* arg){
             while(fscanf(files[i]," %d", &linha)!=EOF){
                 fscanf(files[i]," %s %s %s", str.codigo,str.cidade,str.horario);
                 pthread_mutex_lock(&mutexes[linha]);
+                pthread_join(&temporizadores[linha],NULL);
                 str.linha=linha;
                 func_main(total_linhas,str);
                 pthread_create(&temporizadores[linha],NULL,temporizador,&mutexes[linha]);

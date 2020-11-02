@@ -37,7 +37,7 @@ int isempty(BlockingQueue *q) {return (q->head == NULL);}
 void putBlockingQueue(BlockingQueue *q, int value)
 {
     // pthread_mutex_lock(&mutex);
-    while (q->statusBuffer == q->sizeBuffer) {pthread_cond_wait(&empty, &mutex);}
+    while (q->statusBuffer == q->sizeBuffer) {pthread_cond_wait(&empty, &mutex); if (flag && (q->statusBuffer == q->sizeBuffer)) return;}
     Elem *temp;
     temp = (Elem*) malloc(sizeof(Elem));
     temp->value = value;
@@ -52,7 +52,7 @@ void putBlockingQueue(BlockingQueue *q, int value)
 int takeBlockingQueue(BlockingQueue *q)
 {
     // pthread_mutex_lock(&mutex);
-    while(q->statusBuffer == 0) {pthread_cond_wait(&fill, &mutex);}    
+    while(q->statusBuffer == 0) {pthread_cond_wait(&fill, &mutex); if (flag && (q->statusBuffer == 0)) return -1;}    
     Elem *tmp;
     int n = q->head->value;
     tmp = q->head;
@@ -80,10 +80,11 @@ void *consumer(void *q){
     int v;
     BlockingQueue* Q = (BlockingQueue*) q;
     while(1){
+        if (flag) break;
         pthread_mutex_lock(&mutex);
         consumo++;
         v = takeBlockingQueue(Q);
-        printf("Consumiu %d\n",v);
+        if (v>0) printf("Consumiu %d\n",v);
         pthread_mutex_unlock(&mutex);
         if (flag) break;
     }
@@ -94,6 +95,7 @@ void *consumer(void *q){
 void *producer(void *q) {
     BlockingQueue* Q = (BlockingQueue*) q;
     while(1){
+        if (flag) break;
         pthread_mutex_lock(&mutex);
         producao++;
         putBlockingQueue(Q,producao);
@@ -126,13 +128,13 @@ int main()
     scanf(" %d",&Segundos);
 
     //Organizar as threads
-    int total=C+P;
+    int total = C+P;
     threads = (pthread_t *) malloc(sizeof(pthread_t)*C*P);
     for(int i = 0;i<C;i++){pthread_create(&threads[i],NULL,consumer,q);}
     for(int i = C;i<total;i++){pthread_create(&threads[i],NULL,producer,q);}
 
     sleep(Segundos);
-    flag=1;
+    flag = 1;
 
     //Resultados
     for(int i=0;i<total;i++) pthread_join(threads[i],NULL);

@@ -20,10 +20,11 @@ int qnt_threads;
 void * substrings (void * arg){
     int * t = (int*) arg;
     int i,j;
-    for(i=*t;i<=(n1-n2);i+=qnt_threads){
-        for(j=0;j<n2;j++){
+    
+    for(i=*t; i<=(n1-n2); i+=qnt_threads){
+        for(j=0; j<n2; j++){
             if(s1[i+j] == s2[j]){
-                if(j == n2-1){
+                if(j == n2 - 1){
                     pthread_mutex_lock(&lock);
                     counter++;
                     pthread_mutex_unlock(&lock); 

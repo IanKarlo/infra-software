@@ -7,9 +7,9 @@
 #include <unistd.h>
 #include <time.h>
 
-//funcoes
 int (*lista_funcoes[FUNC_QUANT]) (int,int) = {add,sub,mul,dvs,elv,sum};
 char nome_funcoes [][5]= {"add","sub","mul","div","pow","sum"};
+
 
 #define MAXSIZE 1000
 
@@ -96,9 +96,10 @@ void *despachante (void *arg){
 }
 
 int main(){
-  srand(time());
+  srand(time(NULL));
   printf("Quantos nucleos? ");
   scanf(" %d", &quant_threads);
+
   //Reservar memoria
   threads = (threads_s *) malloc(sizeof(threads_s) * quant_threads);
   for (int i=0;i<quant_threads;i++) threads[i].livre=true;
@@ -118,7 +119,7 @@ int main(){
     else if (!strcmp(funcao,reset)) {
       for (int i=0;i<quant_threads;i++) {pthread_cancel(threads[i].thread); threads[i].livre=true;}
       pthread_cancel(despachar_t);
-      for (int i=0;i<MAXSIZE;i++) res[i].reservado=false;
+      for (int i=0;i<MAXSIZE;i++) res[i].reservado = false;
       buffer_index = criar_index = 0;
       pthread_create(&despachar_t, NULL, despachante, NULL);
       printf("Todos os resultados foram resetados\n");

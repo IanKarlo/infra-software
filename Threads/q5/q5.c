@@ -99,8 +99,6 @@ int main() {
     scanf(" %d", &n);
     get_matrix();
 
-    puts("WHY");
-
     /* Validação da quantidade de threads */
     if(n > tamanho) n = tamanho;
 

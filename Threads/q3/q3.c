@@ -12,26 +12,27 @@ typedef struct thread_data{
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 pthread_t *threads;
 int counter = 0;
-char s1[MAX];
-char s2[MAX];
-int n1,n2;
+
+char palavra1[MAX];
+char palavra2[MAX];
+int size1,size2;
 int qnt_threads;
 
 void * substrings (void * arg){
-    int * t = (int*) arg;
+    int *id = (int*) arg;
     int i,j;
     
-    for(i=*t; i<=(n1-n2); i+=qnt_threads){
-        for(j=0; j<n2; j++){
-            if(s1[i+j] == s2[j]){
-                if(j == n2 - 1){
+    for(i=*id; i<=(size1-size2); i+=qnt_threads){
+        for(j=0; j<size2; j++){
+            if(palavra1[i+j] == palavra2[j]){
+                if(j == size2 - 1){
                     pthread_mutex_lock(&lock);
                     counter++;
                     pthread_mutex_unlock(&lock); 
                 }
             }
             else {
-                j = n2;
+                j = size2;
             }         
         }
     }
@@ -43,18 +44,18 @@ int main(){
     int i,j;
     
     printf("String 1:");
-    scanf(" %[^\n]",s1);
+    scanf(" %[^\n]",palavra1);
     do{
     printf("String 2:");
-    scanf(" %[^\n]",s2);
-    }while(strlen(s2)>strlen(s1));
+    scanf(" %[^\n]",palavra2);
+    }while(strlen(palavra2) > strlen(palavra1));
 
-    n1 = strlen(s1);
-    n2 = strlen(s2);
+    size1 = strlen(palavra1);
+    size2 = strlen(palavra2);
 
     do{printf("quantidade de threads:");
     scanf("%d",&qnt_threads);
-    }while(qnt_threads < 1 ||(n1 % qnt_threads) != 0);
+    }while(qnt_threads < 1 ||(size1 % qnt_threads) != 0);
 
     threads = (pthread_t*)malloc(qnt_threads*sizeof(pthread_t));
     int id[qnt_threads];

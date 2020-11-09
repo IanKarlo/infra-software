@@ -16,9 +16,10 @@ int main(){
     printf("Quantas de threads? ");
     scanf(" %d", &quantidade_threads);
     char nome[30],endereco[50]="Imagens/";
-    printf("Qual o nome da imagem ppm? ");
+    printf("Qual o nome da imagem ????.ppm (Sem o \".ppm\"?) ");
     scanf(" %[^\n]",nome);
     strcat(endereco,nome);
+    strcat(endereco,".ppm");
     FILE *f = fopen(endereco,"r");
     
     //Pega as informações basicas

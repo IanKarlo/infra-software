@@ -21,7 +21,7 @@ double *b_vector;
 double **matriz; 
 
 void get_matrix(){
-    char frase[100];
+    char frase[300];
     FILE* file = fopen("matriz.txt","r");
     if (file==NULL) printf("OOPS\n");
     fscanf(file," %[^\n]",frase);
